@@ -1,13 +1,14 @@
 import time
 import pychromecast
 import os
-from subprocess import Popen
+import subprocess
 
 chromecasts, browser = pychromecast.get_listed_chromecasts(friendly_names=["Mikes Hard Visual Aid"])
 
-
-videoDirectory = input("What directory is the file stored?: ")
-command = "python3 -m http.server -d " + videoDirectory
+def videoServer():
+    videoDirectory = input("What directory is the file stored?: ")
+    command = "python3 -m http.server -d " + videoDirectory + " &"
+    subprocess.run(command, shell=True)
 
 def videoCast():
     videoTitle = input("What is the filename of the video?: ")
@@ -19,6 +20,15 @@ def videoCast():
     mc.block_until_active()
     print(mc.status)
 
-p = Popen(command)
+videoServer()
 videoCast()
-
+stopVideo = False
+while(stopVideo == False):
+    userResponse = input("End Server?(y/n): ")
+    if(userResponse == "y"):
+        stopVideo = True
+    elif(userResponse == "n"):
+        print("Resuming server operations?")
+    else:
+        print("Somethings wrong I can feel it...")
+subprocess.run("pkill python3")
